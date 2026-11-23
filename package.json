@@ -11,6 +11,7 @@
     "preview": "vite preview",
     "test": "rescript build && node --test tests/*.mjs",
     "typecheck": "rescript build",
+    "postinstall": "rescript build",
     "clean": "rescript clean"
   },
   "dependencies": {

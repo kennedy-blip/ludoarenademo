@@ -10,7 +10,7 @@ JavaScript in the repo is the one-line CSS shim and the compiled output itself.
 ```bash
 npm install
 npm run dev      # http://localhost:3000
-npm test         # 36 engine + board + UI tests
+npm test         # 54 engine + board + economy + UI tests
 npm run build    # rescript build && vite build  →  dist/
 ```
 
@@ -34,12 +34,18 @@ src/
     Rng.res       seeded mulberry32 + FNV-1a hashing
     Game.res      the rules: roll, move, captures, finishing, bot AI
     Verify.res    replay a finished match from its seed
-  wallet/Wallet.res   integer-cent wallet, localStorage persistence
-  components/         Lobby, GameScreen, BoardView, WalletModal, Chip
-  App.res             app shell + bot driver
-  Main.res            browser entry point
-tests/                node:test suites (engine, board geometry, UI smoke)
+  economy/Economy.res  prize pool, daily bonus, Elo rating, ranks, tournament points
+  wallet/Wallet.res    integer-cent wallet, localStorage persistence
+  components/          Lobby, GameScreen, BoardView, WalletModal, Chip
+  App.res              app shell + bot driver
+  Main.res             browser entry point
+supabase/migrations/   SQL for the ludo_* tables
+tests/                 node:test suites (engine, board, economy, UI smoke)
 ```
+
+Every source file in the app is `.res`. The only JavaScript is
+`src/styles.mjs`, a one-line import of the Tailwind entry point, because CSS
+cannot be imported from ReScript directly.
 
 ### Verifiable matches
 
@@ -57,8 +63,12 @@ so rounding drift cannot reach a payout.
 
 Render builds this repo with `npm ci && npm run build` and publishes `dist/`.
 The blueprint is in `render.yaml`; pull-request previews are enabled.
-`web/` is the previous Next.js experiment, kept for reference only and no longer
-deployed.
+### One build gotcha
+
+`npm run build` compiles ReScript first. ReScript's `.mjs` output is
+git-ignored, so a build command that calls `vite build` on its own fails with
+`Failed to resolve /src/Main.mjs`. `postinstall` runs `rescript build` as a
+safety net, but the Render service should use `npm ci && npm run build`.
 
 ---
 
