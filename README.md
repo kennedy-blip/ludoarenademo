@@ -1,3 +1,17 @@
+# 🎲 Ludo Arena KE
+
+> **🚧 Next-generation app in progress** — the new Next.js app lives in [`web/`](web/).
+> The Vite app in this folder is still what **https://ludoarenademo-1.onrender.com** serves
+> and it keeps working untouched. See **[docs/STACK-MIGRATION.md](docs/STACK-MIGRATION.md)**
+> for the zero-downtime cutover plan.
+>
+> ```bash
+> cd web && npm install && npm run dev    # http://localhost:3000
+> cd web && npm test                      # 27 engine + economy tests
+> ```
+
+---
+
 # 🎲 Ludo Arena KE - M-Pesa Integrated Ludo Game
 
 A full-featured Ludo game with Free Mode and Beast Mode (monetized) with M-Pesa integration for Kenya.

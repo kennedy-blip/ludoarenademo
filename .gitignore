@@ -1,0 +1,26 @@
+# dependencies
+node_modules/
+web/node_modules/
+
+# builds
+dist/
+dist-ssr/
+web/.next/
+web/out/
+web/.vercel/
+web/.turbo/
+
+# env
+.env
+.env.*
+!.env.example
+web/.env
+web/.env.*
+!web/.env.example
+
+# misc
+*.log
+npm-debug.log*
+.DS_Store
+coverage/
+*.tsbuildinfo

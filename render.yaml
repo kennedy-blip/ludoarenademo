@@ -1,0 +1,66 @@
+# Render Blueprint — Ludo Arena KE
+#
+# Two services live here:
+#
+#   1. ludoarenademo      → the ORIGINAL Vite app at the repo root.
+#                           Unchanged build: `npm ci && npm run build` → ./dist.
+#                           This is what https://ludoarenademo-1.onrender.com serves.
+#
+#   2. ludo-arena-web     → the new Next.js app in ./web.
+#                           Built but NOT routed to the public domain until you
+#                           flip it, so production is never at risk mid-migration.
+#
+# Pull-request previews are enabled so this branch can be reviewed on a live URL
+# without touching production.
+
+previewsEnabled: true
+
+services:
+  # ---------------------------------------------------------------------------
+  # Legacy Vite app — keeps the existing live site identical.
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: ludoarenademo
+    runtime: static
+    rootDir: .
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 22.12.0
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+  # ---------------------------------------------------------------------------
+  # New Next.js app — promotes to production when you switch the domain over.
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: ludo-arena-web
+    runtime: node
+    rootDir: web
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    plan: starter
+    autoDeploy: true
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: 22.12.0
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: MPESA_MODE
+        value: demo
