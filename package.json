@@ -1,31 +1,31 @@
 {
-  "name": "react-vite-tailwind",
+  "name": "ludo-arena-ke",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "rescript build && vite build",
+    "dev": "rescript build -w & vite",
+    "preview": "vite preview",
+    "test": "rescript build && node --test tests/*.mjs",
+    "typecheck": "rescript build",
+    "clean": "rescript clean"
   },
   "dependencies": {
-    "@tailwindcss/postcss": "^4.1.18",
-    "autoprefixer": "^10.4.23",
-    "clsx": "2.1.1",
-    "postcss": "^8.5.6",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "tailwind-merge": "3.4.0"
+    "@rescript/core": "1.6.1",
+    "@rescript/react": "0.15.0",
+    "@supabase/supabase-js": "2.119.2",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "zustand": "5.1.0"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "4.1.17",
-    "@types/node": "^22.0.0",
-    "@types/react": "19.2.7",
-    "@types/react-dom": "19.2.3",
-    "@vitejs/plugin-react": "5.1.1",
-    "tailwindcss": "4.1.17",
-    "typescript": "5.9.3",
+    "@tailwindcss/postcss": "4.3.5",
+    "rescript": "12.3.1",
+    "tailwindcss": "4.3.5",
     "vite": "7.2.4",
-    "vite-plugin-singlefile": "2.3.0"
+    "@vitejs/plugin-react": "5.1.1"
   }
 }

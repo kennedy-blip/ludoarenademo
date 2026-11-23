@@ -1,14 +1,64 @@
 # 🎲 Ludo Arena KE
 
-> **🚧 Next-generation app in progress** — the new Next.js app lives in [`web/`](web/).
-> The Vite app in this folder is still what **https://ludoarenademo-1.onrender.com** serves
-> and it keeps working untouched. See **[docs/STACK-MIGRATION.md](docs/STACK-MIGRATION.md)**
-> for the zero-downtime cutover plan.
->
-> ```bash
-> cd web && npm install && npm run dev    # http://localhost:3000
-> cd web && npm test                      # 27 engine + economy tests
-> ```
+A Ludo game for Kenya, with a free mode and a real-money *Beast* mode.
+
+**The whole app is written in [ReScript](https://rescript-lang.org) 12.** No
+TypeScript, no JavaScript application code — the engine, the UI, the wallet and
+the entry point are all `.res` files that compile to plain ES modules. The only
+JavaScript in the repo is the one-line CSS shim and the compiled output itself.
+
+```bash
+npm install
+npm run dev      # http://localhost:3000
+npm test         # 36 engine + board + UI tests
+npm run build    # rescript build && vite build  →  dist/
+```
+
+## Why ReScript
+
+- **Sound types, cheap runtime.** ReScript compiles to small, readable ESM with
+  no runtime type machinery; the bundle is ~250 kB (79 kB gzipped) including React.
+- **Same deploy shape.** It emits static files, so the existing Render static
+  service — `npm ci && npm run build` → `./dist` — keeps serving
+  **https://ludoarenademo-1.onrender.com** with no infrastructure change.
+- **It caught real bugs.** The compiler rejected option/number collisions and
+  exhaustiveness holes that would have been silent runtime failures in JS.
+
+## Architecture
+
+```
+src/
+  engine/
+    Types.res     state, players, tokens, rules
+    Board.res     52-cell ring, yards, home columns, draw coordinates
+    Rng.res       seeded mulberry32 + FNV-1a hashing
+    Game.res      the rules: roll, move, captures, finishing, bot AI
+    Verify.res    replay a finished match from its seed
+  wallet/Wallet.res   integer-cent wallet, localStorage persistence
+  components/         Lobby, GameScreen, BoardView, WalletModal, Chip
+  App.res             app shell + bot driver
+  Main.res            browser entry point
+tests/                node:test suites (engine, board geometry, UI smoke)
+```
+
+### Verifiable matches
+
+Every match is driven by a seed. `state.log` records each roll and move, and
+`Verify.replay` re-derives the final state from the seed plus the players'
+token choices. A tampered log fails `Verify.verify` — so a Beast-mode result can
+be audited after the fact instead of being taken on trust.
+
+### Money handling
+
+All amounts are integer cents. `Wallet` never does float arithmetic on balances,
+so rounding drift cannot reach a payout.
+
+## Deployment
+
+Render builds this repo with `npm ci && npm run build` and publishes `dist/`.
+The blueprint is in `render.yaml`; pull-request previews are enabled.
+`web/` is the previous Next.js experiment, kept for reference only and no longer
+deployed.
 
 ---
 

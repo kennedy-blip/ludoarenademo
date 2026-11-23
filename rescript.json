@@ -1,0 +1,9 @@
+{
+  "name": "ludo-arena-ke",
+  "sources": [{ "dir": "src", "subdirs": true }],
+  "package-specs": [{ "module": "esmodule", "in-source": true }],
+  "suffix": ".mjs",
+  "jsx": { "version": 4, "mode": "automatic" },
+  "dependencies": ["@rescript/core", "@rescript/react"],
+  "compiler-flags": ["-warn-error", "+101"]
+}

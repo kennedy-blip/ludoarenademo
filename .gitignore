@@ -4,6 +4,16 @@ web/node_modules/
 
 # builds
 dist/
+# ReScript compiler output cache.
+lib/
+*.res.mjs.map
+
+# ReScript emits .mjs next to each .res (in-source build). Both `npm run build`
+# and `npm test` run `rescript build` first, so these are always regenerated and
+# never need to be committed. src/styles.mjs is hand-written, so it stays.
+src/**/*.mjs
+src/*.mjs
+!src/styles.mjs
 dist-ssr/
 web/.next/
 web/out/
