@@ -53,7 +53,7 @@ export async function settleMatchAction(
   if (!user) return { ok: false, demo: false, message: "Session expired — sign in again." };
 
   const { data: profile } = await admin
-    .from("profiles")
+    .from("ludo_profiles")
     .select("id,rating,matches_played,matches_won")
     .eq("id", user.id)
     .maybeSingle();
@@ -64,7 +64,7 @@ export async function settleMatchAction(
   const humanIds = snapshot.players.filter((p) => !p.isBot && UUID_RE.test(p.id)).map((p) => p.id);
   if (humanIds.length > 0) {
     const { data: humans } = await admin
-      .from("profiles")
+      .from("ludo_profiles")
       .select("id,rating")
       .in("id", humanIds);
     (humans ?? []).forEach((h) => (ratings[h.id] = h.rating));
@@ -80,7 +80,7 @@ export async function settleMatchAction(
 
   // 1. match row
   const { data: match, error: matchErr } = await admin
-    .from("matches")
+    .from("ludo_matches")
     .insert({
       mode: snapshot.mode,
       seed: snapshot.seed,
@@ -109,13 +109,13 @@ export async function settleMatchAction(
       captures: 0,
       is_bot: false,
     }));
-  if (playerRows.length > 0) await admin.from("match_players").insert(playerRows);
+  if (playerRows.length > 0) await admin.from("ludo_match_players").insert(playerRows);
 
   // 3. rating + counters
   const mine = summary.ratingChanges[user.id];
   if (mine) {
     await admin
-      .from("profiles")
+      .from("ludo_profiles")
       .update({
         rating: mine.after,
         matches_played: (profile.matches_played ?? 0) + 1,
@@ -126,7 +126,7 @@ export async function settleMatchAction(
 
   // 4. prize credit, atomically through the ledger function
   if (prizeCents > 0) {
-    await admin.rpc("credit_wallet", {
+    await admin.rpc("ludo_credit_wallet", {
       p_user: user.id,
       p_amount: prizeCents,
       p_kind: "game_win",
@@ -136,16 +136,16 @@ export async function settleMatchAction(
   }
 
   // 5. weekly tournament standings (created on demand for the current week)
-  await admin.rpc("ensure_current_tournament");
+  await admin.rpc("ludo_ensure_current_tournament");
   const { data: tournament } = await admin
-    .from("tournaments")
+    .from("ludo_tournaments")
     .select("id")
     .order("starts_at", { ascending: false })
     .limit(1)
     .maybeSingle();
 
   if (tournament) {
-    await admin.from("tournament_entries").upsert(
+    await admin.from("ludo_tournament_entries").upsert(
       {
         tournament_id: tournament.id,
         user_id: user.id,
@@ -156,7 +156,7 @@ export async function settleMatchAction(
       { onConflict: "tournament_id,user_id", ignoreDuplicates: true },
     );
     // Increment rather than replace on repeat plays.
-    await admin.rpc("add_tournament_points", {
+    await admin.rpc("ludo_add_tournament_points", {
       p_tournament: tournament.id,
       p_user: user.id,
       p_points: summary.tournamentPoints[user.id] ?? 0,

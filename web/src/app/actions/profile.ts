@@ -37,8 +37,8 @@ export async function getMyProfile(accessToken: string): Promise<ProfileSummary 
   });
 
   const [{ data: profile }, { data: wallet }] = await Promise.all([
-    supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
-    supabase.from("wallets").select("balance_cents").eq("user_id", user.id).maybeSingle(),
+    supabase.from("ludo_profiles").select("*").eq("id", user.id).maybeSingle(),
+    supabase.from("ludo_wallets").select("balance_cents").eq("user_id", user.id).maybeSingle(),
   ]);
 
   if (!profile) return null;

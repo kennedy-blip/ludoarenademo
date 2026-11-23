@@ -87,9 +87,9 @@ export const useWallet = create<WalletState>()(
         if (!auth.user) return;
 
         const [{ data: wallet }, { data: txs }] = await Promise.all([
-          supabase.from("wallets").select("balance_cents,pending_cents").eq("user_id", auth.user.id).maybeSingle(),
+          supabase.from("ludo_wallets").select("balance_cents,pending_cents").eq("user_id", auth.user.id).maybeSingle(),
           supabase
-            .from("wallet_transactions")
+            .from("ludo_wallet_transactions")
             .select("id,kind,amount_cents,status,description,created_at")
             .order("created_at", { ascending: false })
             .limit(40),

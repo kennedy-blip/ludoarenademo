@@ -26,7 +26,7 @@ export async function fetchLeaderboard(
 ): Promise<{ rows: LeaderboardRow[]; live: boolean }> {
   if (!supabase) return { rows: SEED_LEADERBOARD.slice(0, limit), live: false };
   const { data, error } = await supabase
-    .from("leaderboard")
+    .from("ludo_leaderboard")
     .select("*")
     .order("position", { ascending: true })
     .limit(limit);
