@@ -5,6 +5,13 @@
 #
 #   buildCommand: npm ci && npm run build    →  dist/
 #
+# IMPORTANT: the build command must be `npm run build`, not a bare
+# `vite build`. `npm run build` runs `rescript build` first; ReScript's `.mjs`
+# output is gitignored, so skipping that step fails with
+#   [vite:build-html] Failed to resolve /src/Main.mjs
+# `postinstall` also runs `rescript build`, so even a bare `vite build` works
+# now — but keep the explicit script as the source of truth.
+#
 # The build shape is unchanged from the previous TypeScript app, so the live
 # site https://ludoarenademo-1.onrender.com keeps deploying from the same
 # service on every push — no domain move, no downtime.
